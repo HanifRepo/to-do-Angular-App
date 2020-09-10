@@ -1,0 +1,19 @@
+.text_holder{
+    height : 60px;
+    width  : 700px;
+    background-color: white;
+    border-color: darkgray;
+    outline: none;
+    border-width: 2px;
+    border-left: none;
+    border-top: none;
+    border-right: none;
+    font-style: italic;
+    font-weight: lighter;
+    font-size :28px;
+    text-align: start;
+}
+
+.text__holder {
+    display: block;
+}

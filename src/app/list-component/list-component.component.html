@@ -1,0 +1,24 @@
+<div class="list__holder">
+    <ul class="containing__list" id="list"> 
+        <ol *ngFor = "let item of list">
+            <input type="checkbox" class="checkbox_align" [(ngModel)]=item.isChecked />
+            <span class="mark" (click)="changeSpanState(item)">Hie</span>
+            <p>{{item.toDoValue}}</p>
+        </ol>
+    </ul>
+</div>
+<div class="summary_holder">
+    <div class="total_holder">
+        <span class="items_remaining">{{itemLeft}}</span>
+    </div>
+    <div class="choice_holder">
+        <Button (click)="setupList()">All</Button>
+        <Button (click)="activeList()">Active</Button>
+        <Button (click)="checkedList()">Checked</Button>
+    </div>
+    <div class="button_holder">
+        <Button (click)="setCompleted()">Complete</Button>
+        <Button (click)="deleteToDos()" >{{deleteButtonState}}</Button>
+        <Button (click)="clearCompletedToDos()">{{clearButtonState}}</Button>
+    </div>
+</div>

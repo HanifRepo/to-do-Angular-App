@@ -1,0 +1,11 @@
+<div class="whole__container">
+    <div class="app_header center">
+        <h1 class="header_name">todos</h1>
+    </div>
+    <div class="div_for_text_list_holder paper center">
+        <app-input-component (toDoEvent)="getToDoValue($event)">    
+        </app-input-component>
+        <app-list-component [toDoValue]="toDoValue">
+        </app-list-component>
+    </div>
+</div>
