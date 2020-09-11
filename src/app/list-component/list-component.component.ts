@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, OnInit, Input, OnChanges, SimpleChanges, ɵConsole } from '@angular/core';
 
 import { toDoModel } from './toDoModel' ;
 import { TimeoutError } from 'rxjs';
@@ -13,16 +13,17 @@ export class ListComponentComponent implements OnInit , OnChanges {
   list : toDoModel[] ;
   itemLeft : string ;
   deleteButtonState : string ;
-  clearButtonState : string ;
   backupList : toDoModel[] ;
   deleteTimer;
   clearTimer;
+  singleDeleteTimer;
+  undoState : boolean ;
   constructor() { 
     this.toDoValue = "";
     this.list = [] ;
     this.deleteButtonState = "Delete";
-    this.clearButtonState = "Clear";
     this.backupList = [];
+    this.undoState = false;
   }
 
   ngOnInit(): void {
@@ -43,6 +44,7 @@ export class ListComponentComponent implements OnInit , OnChanges {
     if(items_from_storage !== null){
       for(let toDoValues of items_from_storage){
         this.list.push(toDoValues);
+        var x = toDoValues.toDoValue + "+para";
       }
     }
     this.itemsLeft();
@@ -125,9 +127,9 @@ export class ListComponentComponent implements OnInit , OnChanges {
     var localList : toDoModel[] = this.list;
     for(let i of localList){
       for(let j of items_from_storage){
-        if(i.toDoValue === j.toDoValue && j.isCompleted === "uncompleted" && j.isChecked === false && i.isChecked === true){
+        if(i.toDoValue === j.toDoValue && j.isCompleted === "uncompleted" && i.isChecked === true){
           j.isCompleted = "completed";
-          j.isChecked = true ;
+          j.isChecked = false ;
           break;
         }
       }
@@ -139,23 +141,26 @@ export class ListComponentComponent implements OnInit , OnChanges {
   deleteToDos() : void {
     if(this.deleteButtonState === "Delete"){
       this.deleteButtonState = "Undo";
+      this.undoState = true ;
       this.backupList = this.list;
-      this.list = this.list.filter(item => item.isChecked !== true && item.isCompleted !== "completed");
+      this.list = this.list.filter(item => item.isChecked !== true);
       this.deleteTimer = setTimeout(() => this.permanentDelete(),5000);
     }else{
       this.deleteButtonState = "Delete";
       this.list = this.backupList;
+      this.undoState = false ;
       clearTimeout(this.deleteTimer);
     }
   }
 
   permanentDelete() : void {
+    this.undoState = false ;
     this.deleteButtonState = "Delete";
     var items_from_storage : toDoModel[] = JSON.parse(localStorage.getItem("item_names"));
     var localList : toDoModel[] = this.backupList;
     for(let i of localList){
       for(let j of items_from_storage){
-        if(i.toDoValue === j.toDoValue && j.isCompleted === "uncompleted" && i.isChecked === true){
+        if(i.toDoValue === j.toDoValue && i.isChecked === true){
           items_from_storage = items_from_storage.filter(item => item.toDoValue !== j.toDoValue);
           break;
         }
@@ -165,32 +170,54 @@ export class ListComponentComponent implements OnInit , OnChanges {
     this.setupList();     
   }
 
-  clearCompletedToDos() : void {
-    if(this.clearButtonState === "Clear"){
-      this.clearButtonState = "Undo";
-      this.backupList = this.list;
-      this.list = this.list.filter(item => item.isChecked !== true && item.isCompleted !== "completed");
-      this.clearTimer = setTimeout(() => this.permanentClear(),5000);
-    }else{
-      this.clearButtonState = "Clear";
-      this.list = this.backupList;
-      clearTimeout(this.clearTimer);
-    }
-  }
-
-  permanentClear() : void {
-    this.clearButtonState = "Clear";
+  completedSingleItem(toDoName) : void{
     var items_from_storage : toDoModel[] = JSON.parse(localStorage.getItem("item_names"));
-    var localList : toDoModel[] = this.backupList;
-    for(let i of localList){
-      for(let j of items_from_storage){
-        if(i.toDoValue === j.toDoValue && j.isCompleted === "completed" && j.isChecked === true){
-          items_from_storage = items_from_storage.filter(item => item.toDoValue !== j.toDoValue);
-          break;
-        }
+    for(let i of items_from_storage){
+      if(i.toDoValue === toDoName && i.isCompleted === "uncompleted"){
+        i.isCompleted = "completed";
+        i.isChecked = false ;
+        break;
       }
     }
     localStorage.setItem("item_names",JSON.stringify(items_from_storage));
-    this.setupList();  
+    this.setupList();
+  }
+
+  deleteSingleItem(toDoName) : void {
+    try{
+    if(document.getElementById("   ").innerHTML === "UNDO"){
+      clearTimeout(this.singleDeleteTimer);
+      this.setupList();
+      document.getElementById(toDoName).innerHTML = "Delete";
+      this.undoState = false;
+      return;
+    }}catch(error){
+    }
+    if(this.undoState === true){
+      alert("Aleady some To-Do in Undo State");
+      return;
+    } else {
+      this.undoState = true;
+      for(let i of this.list){
+        if(i.toDoValue === toDoName){
+          i.toDoValue = "   ";
+          this.singleDeleteTimer = setTimeout(() => this.deleteSingleItemPermanently(toDoName),5000);
+          document.getElementById(toDoName).innerHTML = "UNDO";
+          return;
+        }
+      }
+    }
+  }
+
+  deleteSingleItemPermanently(toDoName) : void {
+    this.undoState = false ;
+    var items_from_storage : toDoModel[] = JSON.parse(localStorage.getItem("item_names"));
+    items_from_storage = items_from_storage.filter(item => item.toDoValue !== toDoName);
+    localStorage.setItem("item_names",JSON.stringify(items_from_storage));
+    this.setupList();
+  }
+
+  see() : void {
+    console.log("Changee");
   }
 }
