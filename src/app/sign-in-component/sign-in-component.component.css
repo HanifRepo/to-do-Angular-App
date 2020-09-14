@@ -1,0 +1,55 @@
+.whole__container{
+    display: flex;
+    margin:auto;
+    align-items: center;
+    justify-content: space-around;
+    flex-direction: column;
+    flex-wrap: wrap;
+    z-index: 5;
+    font-family: Arial, Helvetica, sans-serif;
+    width: 100%;
+    background-color:inherit;
+    min-height: 250px;
+    margin-top: 150px;
+}
+
+input[type=text]{
+    border-color: inherit;
+    outline :none;
+    border : none;
+    height : 25px;
+    margin-left : 5px;
+}
+
+div{
+    margin-top: 20px;
+}
+
+.button_holder{
+    display: flex;
+    justify-content: space-between;
+    flex-direction: row;
+    flex-wrap: wrap;
+    width: 300px;
+    margin-top: 35px;
+}
+
+.registration_link{
+    text-decoration : none;
+    color : darkgrey;
+    cursor: pointer;
+    margin: 5px;
+    font-weight: 600;
+}
+
+.sign_in{
+    padding-bottom:1px;
+    padding-left:6px;
+    padding-right:6px;
+    padding-top:1px;
+    background-color: crimson;
+    border: none;
+    width: 70px;
+    outline: none;
+    cursor: pointer;
+}

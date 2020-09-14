@@ -1,8 +1,7 @@
-import { Component, OnInit, Input, OnChanges, SimpleChanges, ɵConsole } from '@angular/core';
+import { Component, OnInit, Input, OnChanges, SimpleChanges } from '@angular/core';
 
 import { toDoModel } from './toDoModel' ;
-import { TimeoutError } from 'rxjs';
-
+import { Router } from '@angular/router';
 @Component({
   selector: 'app-list-component',
   templateUrl: './list-component.component.html',
@@ -10,6 +9,7 @@ import { TimeoutError } from 'rxjs';
 })
 export class ListComponentComponent implements OnInit , OnChanges {
   @Input() toDoValue : string ; 
+  @Input() username : string ;
   list : toDoModel[] ;
   itemLeft : string ;
   deleteButtonState : string ;
@@ -18,7 +18,7 @@ export class ListComponentComponent implements OnInit , OnChanges {
   clearTimer;
   singleDeleteTimer;
   undoState : boolean ;
-  constructor() { 
+  constructor(private router : Router) { 
     this.toDoValue = "";
     this.list = [] ;
     this.deleteButtonState = "Delete";
@@ -43,8 +43,9 @@ export class ListComponentComponent implements OnInit , OnChanges {
     var items_from_storage : toDoModel[] = JSON.parse(localStorage.getItem("item_names"));
     if(items_from_storage !== null){
       for(let toDoValues of items_from_storage){
-        this.list.push(toDoValues);
-        var x = toDoValues.toDoValue + "+para";
+        if(toDoValues.username === this.username){
+          this.list.push(toDoValues);
+        }
       }
     }
     this.itemsLeft();
@@ -55,7 +56,7 @@ export class ListComponentComponent implements OnInit , OnChanges {
     var items_from_storage : toDoModel[] = JSON.parse(localStorage.getItem("item_names"));
     if(items_from_storage !== null){
       for(let toDoValues of items_from_storage){
-        if(toDoValues.isCompleted === "uncompleted"){
+        if(toDoValues.isCompleted === "uncompleted" && toDoValues.username === this.username){
           this.list.push(toDoValues);
         }
       }
@@ -68,7 +69,7 @@ export class ListComponentComponent implements OnInit , OnChanges {
     var items_from_storage : toDoModel[] = JSON.parse(localStorage.getItem("item_names"));
     if(items_from_storage !== null){
       for(let toDoValues of items_from_storage){
-        if(toDoValues.isCompleted === "completed"){
+        if(toDoValues.isCompleted === "completed" && toDoValues.username === this.username){
           this.list.push(toDoValues);
         }
       }
@@ -81,7 +82,7 @@ export class ListComponentComponent implements OnInit , OnChanges {
     if(items_from_storage !== null){
       var count : number = 0 ;
       for(let toDoValues of items_from_storage){
-        if(toDoValues.isCompleted === "uncompleted"){
+        if(toDoValues.isCompleted === "uncompleted" && toDoValues.username === this.username){
           count += 1;
         }
       }
@@ -95,7 +96,8 @@ export class ListComponentComponent implements OnInit , OnChanges {
     const item : toDoModel = {
       toDoValue : toDo ,
       isCompleted : isCompletedParam,
-      isChecked : false
+      isChecked : false,
+      username : this.username
     };
     this.list.push(item);
     var items_from_storage : toDoModel[] = JSON.parse(localStorage.getItem("item_names"));
@@ -103,7 +105,8 @@ export class ListComponentComponent implements OnInit , OnChanges {
       const to_insert : toDoModel = {
         toDoValue : toDo ,
         isCompleted : isCompletedParam,
-        isChecked : false
+        isChecked : false,
+        username : this.username
       };
       items_from_storage[items_from_storage.length] = to_insert ;
       localStorage.setItem("item_names",JSON.stringify(items_from_storage));
@@ -111,7 +114,8 @@ export class ListComponentComponent implements OnInit , OnChanges {
       const to_insert : toDoModel = {
         toDoValue : toDo ,
         isCompleted : isCompletedParam,
-        isChecked : false
+        isChecked : false,
+        username : this.username
       };
       var items_to_storage : toDoModel[] = [] ;
       items_to_storage.push(to_insert) ;
@@ -127,7 +131,7 @@ export class ListComponentComponent implements OnInit , OnChanges {
     var localList : toDoModel[] = this.list;
     for(let i of localList){
       for(let j of items_from_storage){
-        if(i.toDoValue === j.toDoValue && j.isCompleted === "uncompleted" && i.isChecked === true){
+        if(i.toDoValue === j.toDoValue && j.isCompleted === "uncompleted" && i.isChecked === true && i.username === j.username){
           j.isCompleted = "completed";
           j.isChecked = false ;
           break;
@@ -160,8 +164,8 @@ export class ListComponentComponent implements OnInit , OnChanges {
     var localList : toDoModel[] = this.backupList;
     for(let i of localList){
       for(let j of items_from_storage){
-        if(i.toDoValue === j.toDoValue && i.isChecked === true){
-          items_from_storage = items_from_storage.filter(item => item.toDoValue !== j.toDoValue);
+        if(i.toDoValue === j.toDoValue && i.isChecked === true && i.username === this.username && i.username === j.username){
+          items_from_storage.splice(items_from_storage.indexOf(j),1);
           break;
         }
       }
@@ -173,7 +177,7 @@ export class ListComponentComponent implements OnInit , OnChanges {
   completedSingleItem(toDoName) : void{
     var items_from_storage : toDoModel[] = JSON.parse(localStorage.getItem("item_names"));
     for(let i of items_from_storage){
-      if(i.toDoValue === toDoName && i.isCompleted === "uncompleted"){
+      if(i.toDoValue === toDoName && i.isCompleted === "uncompleted" && i.username === this.username){
         i.isCompleted = "completed";
         i.isChecked = false ;
         break;
@@ -212,12 +216,12 @@ export class ListComponentComponent implements OnInit , OnChanges {
   deleteSingleItemPermanently(toDoName) : void {
     this.undoState = false ;
     var items_from_storage : toDoModel[] = JSON.parse(localStorage.getItem("item_names"));
-    items_from_storage = items_from_storage.filter(item => item.toDoValue !== toDoName);
+    for(let i of items_from_storage){
+      if(i.toDoValue === toDoName && i.username === this.username){
+        items_from_storage.splice(items_from_storage.indexOf(i),1);
+      }
+    }
     localStorage.setItem("item_names",JSON.stringify(items_from_storage));
     this.setupList();
-  }
-
-  see() : void {
-    console.log("Changee");
   }
 }

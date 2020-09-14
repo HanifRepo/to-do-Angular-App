@@ -1,0 +1,15 @@
+<div class="whole__container">
+    <h1>Sign In</h1>
+    <div>
+        Username :
+        <input type="text" placeholder="Enter username" [(ngModel)]="username"> 
+    </div>
+    <div>
+        Password :
+        <input type="text" placeholder="Enter Password" [(ngModel)]="password">
+    </div>
+    <div class="button_holder">
+        <a href='/sign_up' class="registration_link">New User?</a>
+        <button class="sign_in" (click) = "authorize()">Sign In</button>
+    </div>
+</div>

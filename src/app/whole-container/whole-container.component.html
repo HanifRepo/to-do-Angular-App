@@ -1,11 +1,12 @@
 <div class="whole__container">
-    <div class="app_header center">
+    <div class="app_header center-header">
         <h1 class="header_name">todos</h1>
+        <button class="logout_button" (click)="logOut()">Log out</button>
     </div>
     <div class="div_for_text_list_holder paper center">
-        <app-input-component (toDoEvent)="getToDoValue($event)">    
+        <app-input-component [username]="username" (toDoEvent)="getToDoValue($event)">    
         </app-input-component>
-        <app-list-component [toDoValue]="toDoValue">
+        <app-list-component [toDoValue]="toDoValue" [username]="username">
         </app-list-component>
     </div>
 </div>

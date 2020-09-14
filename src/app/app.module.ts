@@ -2,24 +2,24 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 
 import { AppComponent } from './app.component';
-import { WholeContainerComponent } from './whole-container/whole-container.component';
 import { InputComponentComponent } from './input-component/input-component.component';
-
+import { AppRoutingModule , routingComponents} from './app-routing.module'
 import { FormsModule } from '@angular/forms';
-import { ListComponentComponent } from './list-component/list-component.component'
+import { ListComponentComponent } from './list-component/list-component.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    WholeContainerComponent,
     InputComponentComponent,
-    ListComponentComponent
+    ListComponentComponent,
+    routingComponents
   ],
   imports: [
     BrowserModule ,
-    FormsModule
+    FormsModule,
+    AppRoutingModule
   ],
-  providers: [],
+  providers: [ ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

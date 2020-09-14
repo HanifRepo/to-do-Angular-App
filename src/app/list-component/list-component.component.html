@@ -1,5 +1,5 @@
 <div class="list__holder">
-    <ul class="containing__list" id="list" (change)="see()"> 
+    <ul class="containing__list" id="list"> 
         <ol *ngFor = "let item of list">
             <input type="checkbox" class="checkbox_align" [(ngModel)]=item.isChecked />
             <span class="mark" (click)="changeSpanState(item)">Hie</span>

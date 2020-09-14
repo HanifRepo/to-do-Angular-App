@@ -42,3 +42,26 @@
     align-self: center;
     flex-direction: column;
 }
+
+.center-header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    align-self: center;
+    flex-direction: row;
+}
+
+.logout_button{
+    position : relative;
+    margin-left: 100px;
+    border: none;
+    outline: none;
+    height: 30px;
+    min-width: 80px;
+    background: inherit;
+    font-size: 18px;
+    color: darkgray;
+    font-weight: 700;
+    cursor: pointer;
+    color: crimson;
+}
