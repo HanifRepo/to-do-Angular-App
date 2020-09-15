@@ -36,4 +36,8 @@ export class SignInComponentComponent implements OnInit {
     return;
   }
 
+  registerationPage() : void{
+    this.router.navigate(['sign_up']);
+  }
+
 }

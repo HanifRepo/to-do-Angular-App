@@ -56,4 +56,8 @@ export class RegistrationComponentComponent implements OnInit {
     return;
   }
 
+  signInPage() : void{
+    this.router.navigate([' ']);
+  }
+
 }

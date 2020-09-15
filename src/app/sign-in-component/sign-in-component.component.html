@@ -9,7 +9,7 @@
         <input type="text" placeholder="Enter Password" [(ngModel)]="password">
     </div>
     <div class="button_holder">
-        <a href='/to-do-Angular-App/sign_up' class="registration_link">New User?</a>
+        <button class="registration_link" (click)="registerationPage()">New User?</button>
         <button class="sign_in" (click) = "authorize()">Sign In</button>
     </div>
 </div>
