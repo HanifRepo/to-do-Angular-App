@@ -19,6 +19,10 @@ export class SignInComponentComponent implements OnInit {
 
   authorize() : void{
     const items_from_storage : authModel[] = JSON.parse(localStorage.getItem('auth'));
+    if(items_from_storage === null){
+      alert('No such user');
+      return;
+    }
     for(let i of items_from_storage){
       if(i.username === this.username && i.password === this.password){
         i.isLogged = true;
