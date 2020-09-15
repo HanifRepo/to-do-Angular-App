@@ -19,7 +19,6 @@ export class SignInComponentComponent implements OnInit {
 
   authorize() : void{
     const items_from_storage : authModel[] = JSON.parse(localStorage.getItem('auth'));
-    console.log(items_from_storage);
     if(items_from_storage === null){
       alert('No such user');
       return;
