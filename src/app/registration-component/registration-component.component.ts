@@ -10,9 +10,11 @@ import { Router } from '@angular/router';
 export class RegistrationComponentComponent implements OnInit {
   username : string;
   password : string;
+  fieldType : boolean;
   constructor(private router : Router) { 
     this.username ="";
     this.password ="";
+    this.fieldType = false;
   } 
 
   ngOnInit(): void {
@@ -60,4 +62,8 @@ export class RegistrationComponentComponent implements OnInit {
     this.router.navigate([' ']);
   }
 
+  toggleFieldType() {
+    this.fieldType = !this.fieldType;
+  }
+  
 }

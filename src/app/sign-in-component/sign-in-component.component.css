@@ -13,7 +13,7 @@
     margin-top: 150px;
 }
 
-input[type=text]{
+input[type=text],input[type=password]{
     border-color: inherit;
     outline :none;
     border : none;
@@ -57,4 +57,19 @@ div{
     width: 70px;
     outline: none;
     cursor: pointer;
+}
+
+.eye_type {
+    margin-left : 5px;
+    cursor : pointer;
+    float: right;
+}
+
+i{
+    position: relative;
+    margin-top: 25%;
+}
+
+.div_align{
+    margin-left: -25px;
 }

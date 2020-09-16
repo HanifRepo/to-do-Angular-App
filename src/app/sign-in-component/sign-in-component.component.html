@@ -1,12 +1,22 @@
 <div class="whole__container">
     <h1>Sign In</h1>
-    <div>
+    <div class="div_align">
         Username :
         <input type="text" placeholder="Enter username" [(ngModel)]="username"> 
     </div>
     <div>
-        Password :
-        <input type="text" placeholder="Enter Password" [(ngModel)]="password">
+        Password :  
+        <input [type]="fieldType ? 'text' : 'password'" placeholder="Enter Password" [(ngModel)]="password">
+        <span class="input-group-text eye_type">
+            <i
+              class="fa"
+              [ngClass]="{
+                'fa-eye-slash': !fieldType,
+                'fa-eye': fieldType
+              }"
+              (click)="toggleFieldType()"
+            ></i>
+        </span>
     </div>
     <div class="button_holder">
         <button class="registration_link" (click)="registerationPage()">New User?</button>
