@@ -15,15 +15,19 @@ export class WholeContainerComponent implements OnInit {
   }
 
   ngOnInit(): void {
-   this.router.params.subscribe((params : Params) => {
+    this.router.params.subscribe((params : Params) => {
      this.username = params['username'];
-   });
-   var items_from_storage : authModel[] = JSON.parse(localStorage.getItem('auth'));
-   for(let i of items_from_storage){
-     if(i.username === this.username && i.isLogged ===false){
-       this.route.navigate(['/']);
-     }
-   }
+    });
+    var items_from_storage : authModel[] = JSON.parse(localStorage.getItem('auth'));
+    if(items_from_storage !==null){
+      for(let i of items_from_storage){
+        if(i.username === this.username && i.isLogged ===false){
+          this.route.navigate(['/']);
+        }
+      }
+    }else{
+      this.route.navigate(['/']);
+    }
   }
 
   getToDoValue($event) { 

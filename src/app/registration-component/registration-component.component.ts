@@ -21,7 +21,7 @@ export class RegistrationComponentComponent implements OnInit {
   }
 
   register() : void {
-    if(this.username.trim() === "" || this.password.trim() === ""){
+    if(this.username.trim() === "" || this.password.trim() === ""  || this.username === null || this.username === undefined || this.password === null || this.password === undefined){
       alert("Please enter username and password");
       return;
     }
@@ -53,13 +53,13 @@ export class RegistrationComponentComponent implements OnInit {
     };
     items_from_storage.push(to_insert);
     localStorage.setItem('auth',JSON.stringify(items_from_storage));
-    alert(' New User Registered');
+    alert('New User Registered');
     this.router.navigateByUrl('/');
     return;
   }
 
   signInPage() : void{
-    this.router.navigate([' ']);
+    this.router.navigateByUrl('/');
   }
 
   toggleFieldType() {

@@ -6,7 +6,7 @@ import { RegistrationComponentComponent } from './registration-component/registr
 
 const routes : Routes = [
     {path : 'todo/:username' , component: WholeContainerComponent},
-    {path : '' , component : SignInComponentComponent},
+    {path : ' ' , component : SignInComponentComponent},
     {path : 'sign_up' ,component: RegistrationComponentComponent},
     { path: '**', component: SignInComponentComponent }
 ];

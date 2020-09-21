@@ -20,7 +20,7 @@ export class InputComponentComponent implements OnInit {
   }
 
   addToDo() : void {
-    if(this.toDoValue.trim() === ""){
+    if(this.toDoValue.trim() === "" || this.toDoValue === null || this.toDoValue === undefined){
       alert("Please write a ToDo");
       return;
     }
