@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { authModel } from '../authModel.model';
 import { Router } from '@angular/router';
+import { HttpClient } from '@angular/common/http'; 
 
 @Component({
   selector: 'app-registration-component',
@@ -11,7 +11,7 @@ export class RegistrationComponentComponent implements OnInit {
   username : string;
   password : string;
   fieldType : boolean;
-  constructor(private router : Router) { 
+  constructor(private router : Router,private http: HttpClient) { 
     this.username ="";
     this.password ="";
     this.fieldType = false;
@@ -25,36 +25,25 @@ export class RegistrationComponentComponent implements OnInit {
       alert("Please enter username and password");
       return;
     }
-    var items_from_storage : authModel[] = JSON.parse(localStorage.getItem('auth'));
+    var items_from_storage : string = JSON.parse(localStorage.getItem(this.username));
     if(items_from_storage === null){
-      let items_to_storage : authModel[] = [];
-      let to_insert : authModel = {
-        username : this.username.trim(),
-        password : this.password.trim(),
-        isLogged : false
-      };
-      items_to_storage.push(to_insert);
-      localStorage.setItem('auth',JSON.stringify(items_to_storage));
-      alert(' New User Registered');
-      this.router.navigateByUrl('/');
-      return;
-    } else {
-      for(let i of items_from_storage){
-        if(i.username === this.username){
+      this.http.post<any>('http://localhost:3000/users/signup/',{username : this.username.trim(),password:this.password.trim()}).subscribe(data =>{
+        if(data.registered === '0'){
           alert('Username already used');
-          return;
+          localStorage.setItem(this.username,"false");
+        } else if(data.registered === '1'){
+          alert('New User Registered');
+          localStorage.setItem(this.username,"false"); 
+          this.router.navigateByUrl('/');
+        } else{
+          alert('Error in creating new user');
         }
-      }
+      }, (response) =>{
+        alert('Error in creating new user');
+      });
+    } else {
+      alert('Username already used');
     }
-    let to_insert : authModel = {
-      username : this.username.trim(),
-      password : this.password.trim(),
-      isLogged : false
-    };
-    items_from_storage.push(to_insert);
-    localStorage.setItem('auth',JSON.stringify(items_from_storage));
-    alert('New User Registered');
-    this.router.navigateByUrl('/');
     return;
   }
 

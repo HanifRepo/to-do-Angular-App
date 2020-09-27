@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { authModel } from '../authModel.model'
 import { Router} from '@angular/router'
 import  { Observable,fromEvent } from 'rxjs' 
+import { HttpClient } from '@angular/common/http';
 @Component({
   selector: 'app-sign-in-component',
   templateUrl: './sign-in-component.component.html',
@@ -13,7 +14,7 @@ export class SignInComponentComponent implements OnInit {
   fieldType :boolean;
   register$ : Observable<Event>;
   sign$ : Observable<Event>;
-  constructor(private router : Router) { 
+  constructor(private router : Router,private http: HttpClient) { 
     this.username = "";
     this.password = "";
     this.fieldType = false;
@@ -37,29 +38,24 @@ export class SignInComponentComponent implements OnInit {
     );
   }
   authorize() : void{
-    const items_from_storage : authModel[] = JSON.parse(localStorage.getItem('auth'));
-    if(items_from_storage === null){
-      alert('No such user');
+    if(this.username.trim() === "" || this.password.trim() === ""  || this.username === null || this.username === undefined || this.password === null || this.password === undefined){
+      alert("Please enter username and password");
       return;
     }
-    if(this.username.trim() === "" || this.password.trim() === "" || this.username !== null && this.username !== undefined && this.password !== null && this.password !== undefined){
-      for(let i of items_from_storage){
-        if( i.username === this.username && i.password === this.password){
-          i.isLogged = true;
-          localStorage.setItem('auth',JSON.stringify(items_from_storage));
+    this.http.post<any>('http://localhost:3000/users/signin/',{username : this.username.trim(),password:this.password.trim()}).subscribe(data =>{
+        if(data.signed === '0'){
+          alert('Unable to SignIn Please Check your credentials');
+        } else if(data.signed === '1'){
+          localStorage.setItem(this.username,"true"); 
           this.router.navigate(['todo',this.username]);
-          return;
+        } else{
+          alert('Error in Signing In');
         }
-      }
-    }
-    alert('No such user');
-    return;
+      }, (response) =>{
+        alert('Error in Signing In');
+    });
   }
-
-  registerationPage() : void{
-    this.router.navigate(['sign_up']);
-  }
-
+  
   toggleFieldType() {
     this.fieldType = !this.fieldType;
   }

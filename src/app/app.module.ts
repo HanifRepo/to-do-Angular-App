@@ -1,11 +1,11 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-
 import { AppComponent } from './app.component';
 import { InputComponentComponent } from './input-component/input-component.component';
 import { AppRoutingModule , routingComponents} from './app-routing.module'
 import { FormsModule } from '@angular/forms';
 import { ListComponentComponent } from './list-component/list-component.component';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -17,7 +17,8 @@ import { ListComponentComponent } from './list-component/list-component.componen
   imports: [
     BrowserModule ,
     FormsModule,
-    AppRoutingModule
+    AppRoutingModule,
+    HttpClientModule
   ],
   providers: [ ],
   bootstrap: [AppComponent]

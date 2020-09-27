@@ -2,6 +2,7 @@ import { Component, OnInit, Input, OnChanges, SimpleChanges } from '@angular/cor
 
 import { toDoModel } from './toDoModel' ;
 import { Router } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
 @Component({
   selector: 'app-list-component',
   templateUrl: './list-component.component.html',
@@ -18,7 +19,7 @@ export class ListComponentComponent implements OnInit , OnChanges {
   clearTimer;
   singleDeleteTimer;
   undoState : boolean ;
-  constructor(private router : Router) { 
+  constructor(private router : Router,private http: HttpClient) { 
     this.toDoValue = "";
     this.list = [] ;
     this.deleteButtonState = "Delete";
@@ -28,163 +29,148 @@ export class ListComponentComponent implements OnInit , OnChanges {
 
   ngOnInit(): void {
     this.setupList();
-    this.itemsLeft();
+    
   }
 
-  ngOnChanges(changes : SimpleChanges){
+  ngOnChanges(changes: SimpleChanges){
     if(changes.toDoValue.currentValue !== "" && changes.toDoValue.currentValue !== null){
-      this.addtoDoItem(changes.toDoValue.currentValue,"uncompleted");
+      const item : toDoModel = {
+        toDoValue : changes.toDoValue.currentValue ,
+        isCompleted : "uncompleted",
+        isChecked : false,
+        username : this.username
+      };
+      this.list.push(item);
     }
   }
 
   setupList() : void {
+    var itemRemaining : number = 0;
     this.toDoValue = "";
     this.list = [] ;
-    var items_from_storage : toDoModel[] = JSON.parse(localStorage.getItem("item_names"));
-    if(items_from_storage !== null){
-      for(let toDoValues of items_from_storage){
-        if(toDoValues.username === this.username){
-          this.list.push(toDoValues);
+    this.http.post<any>('http://localhost:3000/listhandler/setuplist',{username : this.username.trim()}).subscribe(data =>{
+      if(data.status === 'empty'){
+      } else {
+        for(let i of data){
+          let dataMap = new Map(Object.entries(i));
+          var boolVal : string  = JSON.stringify(dataMap.get('ischecked'));
+          boolVal = boolVal.substring(1,boolVal.length-1);
+          var ischecked : boolean = boolVal.toLowerCase() === "true";
+          var iscompleted : string =  JSON.stringify(dataMap.get('iscompleted'));
+          iscompleted = iscompleted.substring(1,iscompleted.length-1);
+          var todo : string =  JSON.stringify(dataMap.get('todoValue'));
+          todo = todo.substring(1,todo.length-1);
+          const toInsert : toDoModel ={
+            toDoValue: todo,
+            isCompleted: iscompleted,
+            isChecked: ischecked,
+            username: this.username
+          }
+          if(dataMap.get('iscompleted') === "uncompleted"){
+            itemRemaining += 1;
+          }
+          this.list.push(toInsert);
         }
       }
-    }
-    this.itemsLeft();
+    },
+    ()=>{},
+    () =>{
+      this.itemsLeft(itemRemaining);
+    });
   }
 
   activeList() :void {
-    this.list = [];
-    var items_from_storage : toDoModel[] = JSON.parse(localStorage.getItem("item_names"));
-    if(items_from_storage !== null){
-      for(let toDoValues of items_from_storage){
-        if(toDoValues.isCompleted === "uncompleted" && toDoValues.username === this.username){
-          this.list.push(toDoValues);
+    var itemRemaining : number = 0;
+    this.toDoValue = "";
+    this.list = [] ;
+    this.http.post<any>('http://localhost:3000/listhandler/setuplist',{username : this.username.trim()}).subscribe(data =>{
+      if(data.status === 'empty'){
+      } else {
+        for(let i of data){
+          let dataMap = new Map(Object.entries(i));
+          var boolVal : string  = JSON.stringify(dataMap.get('ischecked'));
+          boolVal = boolVal.substring(1,boolVal.length-1);
+          var ischecked : boolean = boolVal.toLowerCase() === "true";
+          var iscompleted : string =  JSON.stringify(dataMap.get('iscompleted'));
+          iscompleted = iscompleted.substring(1,iscompleted.length-1);
+          var todo : string =  JSON.stringify(dataMap.get('todoValue'));
+          todo = todo.substring(1,todo.length-1);
+          if(iscompleted === "uncompleted"){
+            const toInsert : toDoModel ={
+              toDoValue: todo,
+              isCompleted: iscompleted,
+              isChecked: ischecked,
+              username: this.username
+            }
+            itemRemaining += 1;
+            this.list.push(toInsert);
+          }
         }
       }
-    }
-    this.itemsLeft();
+    },
+    ()=>{},
+    () =>{
+      this.itemsLeft(itemRemaining);
+    });
   }
 
   checkedList() :void {
-    this.list = [];
-    var items_from_storage : toDoModel[] = JSON.parse(localStorage.getItem("item_names"));
-    if(items_from_storage !== null){
-      for(let toDoValues of items_from_storage){
-        if(toDoValues.isCompleted === "completed" && toDoValues.username === this.username){
-          this.list.push(toDoValues);
+    var itemRemaining : number = 0;
+    this.toDoValue = "";
+    this.list = [] ;
+    this.http.post<any>('http://localhost:3000/listhandler/setuplist',{username : this.username.trim()}).subscribe(data =>{
+      if(data.status === 'empty'){
+      } else {
+        for(let i of data){
+          let dataMap = new Map(Object.entries(i));
+          var boolVal : string  = JSON.stringify(dataMap.get('ischecked'));
+          boolVal = boolVal.substring(1,boolVal.length-1);
+          var ischecked : boolean = boolVal.toLowerCase() === "true";
+          var iscompleted : string =  JSON.stringify(dataMap.get('iscompleted'));
+          iscompleted = iscompleted.substring(1,iscompleted.length-1);
+          var todo : string =  JSON.stringify(dataMap.get('todoValue'));
+          todo = todo.substring(1,todo.length-1);
+          if(iscompleted === "completed"){
+            const toInsert : toDoModel ={
+              toDoValue: todo,
+              isCompleted: iscompleted,
+              isChecked: ischecked,
+              username: this.username
+            }
+            this.list.push(toInsert);
+          }else{
+            itemRemaining += 1;
+          }
         }
       }
-    }
-    this.itemsLeft();
+    },
+    ()=>{},
+    () =>{
+      this.itemsLeft(itemRemaining);
+    });
   }
 
-  itemsLeft() : void {
-    var items_from_storage : toDoModel[] = JSON.parse(localStorage.getItem("item_names"));
-    if(items_from_storage !== null){
-      var count : number = 0 ;
-      for(let toDoValues of items_from_storage){
-        if(toDoValues.isCompleted === "uncompleted" && toDoValues.username === this.username){
-          count += 1;
-        }
-      }
-      (count > 1) ? this.itemLeft = ""+count+" items left" : this.itemLeft = ""+count+" item left" 
+  itemsLeft(itemRemaining: number) : void {
+    if(itemRemaining >0){
+      (itemRemaining > 1) ? this.itemLeft = ""+itemRemaining+" items left" : this.itemLeft = ""+itemRemaining+" item left" 
     } else{
       this.itemLeft = "0 item Left"
     }
   }
-
-  addtoDoItem(toDo : string , isCompletedParam : string) : void{
-    const item : toDoModel = {
-      toDoValue : toDo ,
-      isCompleted : isCompletedParam,
-      isChecked : false,
-      username : this.username
-    };
-    this.list.push(item);
-    var items_from_storage : toDoModel[] = JSON.parse(localStorage.getItem("item_names"));
-    if(items_from_storage !== null){
-      const to_insert : toDoModel = {
-        toDoValue : toDo ,
-        isCompleted : isCompletedParam,
-        isChecked : false,
-        username : this.username
-      };
-      items_from_storage[items_from_storage.length] = to_insert ;
-      localStorage.setItem("item_names",JSON.stringify(items_from_storage));
-    } else {
-      const to_insert : toDoModel = {
-        toDoValue : toDo ,
-        isCompleted : isCompletedParam,
-        isChecked : false,
-        username : this.username
-      };
-      var items_to_storage : toDoModel[] = [] ;
-      items_to_storage.push(to_insert) ;
-      localStorage.setItem("item_names",JSON.stringify(items_to_storage));
-    }
-    this.itemsLeft();
-  }
+  
   changeSpanState(item : toDoModel) : void {
     item.isChecked = (item.isChecked === true) ? false : true ; 
   }
-  setCompleted() : void {
-    var items_from_storage : toDoModel[] = JSON.parse(localStorage.getItem("item_names"));
-    var localList : toDoModel[] = this.list;
-    for(let i of localList){
-      for(let j of items_from_storage){
-        if(i.toDoValue === j.toDoValue && j.isCompleted === "uncompleted" && i.isChecked === true && i.username === j.username){
-          j.isCompleted = "completed";
-          j.isChecked = false ;
-          break;
-        }
-      }
-    }
-    localStorage.setItem("item_names",JSON.stringify(items_from_storage));
-    this.setupList(); 
-  }
-  
-  deleteToDos() : void {
-    if(this.deleteButtonState === "Delete"){
-      this.deleteButtonState = "Undo";
-      this.undoState = true ;
-      this.backupList = this.list;
-      this.list = this.list.filter(item => item.isChecked !== true);
-      this.deleteTimer = setTimeout(() => this.permanentDelete(),5000);
-    }else{
-      this.deleteButtonState = "Delete";
-      this.list = this.backupList;
-      this.undoState = false ;
-      clearTimeout(this.deleteTimer);
-    }
-  }
-
-  permanentDelete() : void {
-    this.undoState = false ;
-    this.deleteButtonState = "Delete";
-    var items_from_storage : toDoModel[] = JSON.parse(localStorage.getItem("item_names"));
-    var localList : toDoModel[] = this.backupList;
-    for(let i of localList){
-      for(let j of items_from_storage){
-        if(i.toDoValue === j.toDoValue && i.isChecked === true && i.username === this.username && i.username === j.username){
-          items_from_storage.splice(items_from_storage.indexOf(j),1);
-          break;
-        }
-      }
-    }
-    localStorage.setItem("item_names",JSON.stringify(items_from_storage));
-    this.setupList();     
-  }
 
   completedSingleItem(toDoName) : void{
-    var items_from_storage : toDoModel[] = JSON.parse(localStorage.getItem("item_names"));
-    for(let i of items_from_storage){
-      if(i.toDoValue === toDoName && i.isCompleted === "uncompleted" && i.username === this.username){
-        i.isCompleted = "completed";
-        i.isChecked = false ;
-        break;
-      }
-    }
-    localStorage.setItem("item_names",JSON.stringify(items_from_storage));
-    this.setupList();
+    this.http.post<any>('http://localhost:3000/listhandler/completesingleitem',{username : this.username.trim(),todovalue: toDoName}).subscribe(data =>{
+    },
+    ()=>{
+      alert('Error in Completing');
+    },
+    () =>{
+      this.setupList();
+    });
   }
 
   deleteSingleItem(toDoName) : void {
@@ -192,7 +178,6 @@ export class ListComponentComponent implements OnInit , OnChanges {
     if(document.getElementById("   ").innerHTML === "UNDO"){
       clearTimeout(this.singleDeleteTimer);
       this.setupList();
-      document.getElementById(toDoName).innerHTML = "Delete";
       this.undoState = false;
       return;
     }}catch(error){
@@ -215,13 +200,66 @@ export class ListComponentComponent implements OnInit , OnChanges {
 
   deleteSingleItemPermanently(toDoName) : void {
     this.undoState = false ;
-    var items_from_storage : toDoModel[] = JSON.parse(localStorage.getItem("item_names"));
-    for(let i of items_from_storage){
-      if(i.toDoValue === toDoName && i.username === this.username){
-        items_from_storage.splice(items_from_storage.indexOf(i),1);
+    this.http.post<any>('http://localhost:3000/listhandler/deletesingleitem',{username : this.username.trim(),todovalue: toDoName}).subscribe(data =>{
+    },
+    ()=>{
+      alert('Error in deleting');
+    },
+    () =>{
+      this.setupList();
+    });
+  }
+
+  setCompleted() : void {
+    var localList : toDoModel[] = this.list;
+    var upList :string[]=[];
+    for(let i of localList){
+      if(i.isChecked === true && i.isCompleted === "uncompleted"){
+        upList.push(i.toDoValue);
       }
     }
-    localStorage.setItem("item_names",JSON.stringify(items_from_storage));
-    this.setupList();
+    console.log(upList);
+    this.http.post<any>('http://localhost:3000/listhandler/completebatchitem',{username : this.username.trim(),todovalues: upList}).subscribe(data =>{
+    },
+    ()=>{
+      alert('Error in Completing the batch of To-Do');
+    },
+    () =>{
+      this.setupList();
+    });
   }
+
+  deleteToDos() : void {
+    if(this.deleteButtonState === "Delete"){
+      this.deleteButtonState = "Undo";
+      this.undoState = true ;
+      this.backupList = this.list;
+      var toDelete = this.list.filter(item => item.isChecked !== false);
+      this.list = this.list.filter(item => item.isChecked !== true);
+      this.deleteTimer = setTimeout(() => this.permanentDelete(toDelete),5000);
+    }else{
+      this.deleteButtonState = "Delete";
+      this.list = this.backupList;
+      this.undoState = false ;
+      clearTimeout(this.deleteTimer);
+    }
+  }
+
+  permanentDelete(toDelete: toDoModel[]) : void {
+    this.undoState = false ;
+    this.deleteButtonState = "Delete";
+    var upList :string[]=[];
+    for(let i of toDelete){
+      upList.push(i.toDoValue);
+    }
+    this.http.post<any>('http://localhost:3000/listhandler/deletebatchitem',{username : this.username.trim(),todovalues: upList}).subscribe(data =>{
+    },
+    ()=>{
+      alert('Error in Deleting the batch of To-Do');
+    },
+    () =>{
+      this.setupList();
+    });
+  }
+
 }

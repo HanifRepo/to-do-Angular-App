@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute,Params, Router } from '@angular/router'
 import { authModel } from '../authModel.model';
 @Component({
@@ -18,12 +18,10 @@ export class WholeContainerComponent implements OnInit {
     this.router.params.subscribe((params : Params) => {
      this.username = params['username'];
     });
-    var items_from_storage : authModel[] = JSON.parse(localStorage.getItem('auth'));
-    if(items_from_storage !==null){
-      for(let i of items_from_storage){
-        if(i.username === this.username && i.isLogged ===false){
-          this.route.navigate(['/']);
-        }
+    var items_from_storage  = localStorage.getItem(this.username);
+    if(items_from_storage !== null){
+      if(items_from_storage === "false"){
+        this.route.navigate(['/']);
       }
     }else{
       this.route.navigate(['/']);
@@ -35,15 +33,13 @@ export class WholeContainerComponent implements OnInit {
   }
 
   logOut() : void  {
-    var items_from_storage : authModel[] = JSON.parse(localStorage.getItem('auth'));
-    for(let i of items_from_storage){
-     if(i.username === this.username && i.isLogged ===true){
-       i.isLogged =false;
-       localStorage.setItem('auth',JSON.stringify(items_from_storage));
-       this.route.navigate(['/']);
-       return;
-     }
-   }
+    var items_from_storage = localStorage.getItem(this.username);
+    if(items_from_storage === "true"){
+      localStorage.setItem(this.username,"false");
+      this.username="";
+      this.route.navigate(['/']);
+      return;
+    }
   }
 
 }
