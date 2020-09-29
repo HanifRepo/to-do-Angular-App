@@ -46,7 +46,8 @@ export class SignInComponentComponent implements OnInit {
         if(data.signed === '0'){
           alert('Unable to SignIn Please Check your credentials');
         } else if(data.signed === '1'){
-          localStorage.setItem(this.username,"true"); 
+          localStorage.setItem(this.username,"true");
+          localStorage.setItem("token",data.token); 
           this.router.navigate(['todo',this.username]);
         } else{
           alert('Error in Signing In');

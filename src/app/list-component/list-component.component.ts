@@ -19,15 +19,18 @@ export class ListComponentComponent implements OnInit , OnChanges {
   clearTimer;
   singleDeleteTimer;
   undoState : boolean ;
+  token : string;
   constructor(private router : Router,private http: HttpClient) { 
     this.toDoValue = "";
     this.list = [] ;
     this.deleteButtonState = "Delete";
     this.backupList = [];
     this.undoState = false;
+    this.token ="";
   }
 
   ngOnInit(): void {
+    this.token = localStorage.getItem('token');
     this.setupList();
     
   }
@@ -48,7 +51,8 @@ export class ListComponentComponent implements OnInit , OnChanges {
     var itemRemaining : number = 0;
     this.toDoValue = "";
     this.list = [] ;
-    this.http.post<any>('http://localhost:3000/listhandler/setuplist',{username : this.username.trim()}).subscribe(data =>{
+    const header = { Authorization: `Bearer ${this.token}` };
+    this.http.post<any>('http://localhost:3000/listhandler/setuplist',{username : this.username.trim()},{headers:header}).subscribe(data =>{
       if(data.status === 'empty'){
       } else {
         for(let i of data){
@@ -83,7 +87,8 @@ export class ListComponentComponent implements OnInit , OnChanges {
     var itemRemaining : number = 0;
     this.toDoValue = "";
     this.list = [] ;
-    this.http.post<any>('http://localhost:3000/listhandler/setuplist',{username : this.username.trim()}).subscribe(data =>{
+    const header = { Authorization: `Bearer ${this.token}` };
+    this.http.post<any>('http://localhost:3000/listhandler/setuplist',{username : this.username.trim()},{headers:header}).subscribe(data =>{
       if(data.status === 'empty'){
       } else {
         for(let i of data){
@@ -118,7 +123,8 @@ export class ListComponentComponent implements OnInit , OnChanges {
     var itemRemaining : number = 0;
     this.toDoValue = "";
     this.list = [] ;
-    this.http.post<any>('http://localhost:3000/listhandler/setuplist',{username : this.username.trim()}).subscribe(data =>{
+    const header = { Authorization: `Bearer ${this.token}` };
+    this.http.post<any>('http://localhost:3000/listhandler/setuplist',{username : this.username.trim()},{headers:header}).subscribe(data =>{
       if(data.status === 'empty'){
       } else {
         for(let i of data){
@@ -163,7 +169,8 @@ export class ListComponentComponent implements OnInit , OnChanges {
   }
 
   completedSingleItem(toDoName) : void{
-    this.http.post<any>('http://localhost:3000/listhandler/completesingleitem',{username : this.username.trim(),todovalue: toDoName}).subscribe(data =>{
+    const header = { Authorization: `Bearer ${this.token}` };
+    this.http.post<any>('http://localhost:3000/listhandler/completesingleitem',{username : this.username.trim(),todovalue: toDoName},{headers:header}).subscribe(data =>{
     },
     ()=>{
       alert('Error in Completing');
@@ -200,7 +207,8 @@ export class ListComponentComponent implements OnInit , OnChanges {
 
   deleteSingleItemPermanently(toDoName) : void {
     this.undoState = false ;
-    this.http.post<any>('http://localhost:3000/listhandler/deletesingleitem',{username : this.username.trim(),todovalue: toDoName}).subscribe(data =>{
+    const header = { Authorization: `Bearer ${this.token}` };
+    this.http.post<any>('http://localhost:3000/listhandler/deletesingleitem',{username : this.username.trim(),todovalue: toDoName},{headers:header}).subscribe(data =>{
     },
     ()=>{
       alert('Error in deleting');
@@ -219,7 +227,8 @@ export class ListComponentComponent implements OnInit , OnChanges {
       }
     }
     console.log(upList);
-    this.http.post<any>('http://localhost:3000/listhandler/completebatchitem',{username : this.username.trim(),todovalues: upList}).subscribe(data =>{
+    const header = { Authorization: `Bearer ${this.token}` };
+    this.http.post<any>('http://localhost:3000/listhandler/completebatchitem',{username : this.username.trim(),todovalues: upList},{headers:header}).subscribe(data =>{
     },
     ()=>{
       alert('Error in Completing the batch of To-Do');
@@ -252,7 +261,8 @@ export class ListComponentComponent implements OnInit , OnChanges {
     for(let i of toDelete){
       upList.push(i.toDoValue);
     }
-    this.http.post<any>('http://localhost:3000/listhandler/deletebatchitem',{username : this.username.trim(),todovalues: upList}).subscribe(data =>{
+    const header = { Authorization: `Bearer ${this.token}` };
+    this.http.post<any>('http://localhost:3000/listhandler/deletebatchitem',{username : this.username.trim(),todovalues: upList},{headers:header}).subscribe(data =>{
     },
     ()=>{
       alert('Error in Deleting the batch of To-Do');
